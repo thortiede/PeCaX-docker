@@ -59,10 +59,9 @@ To run the pipeline for the first time, please follow the steps given below.
 
 PeCaX uses several volumes to store data and work files. They are briefly described here:
 
-- sbml4j_network_db: used to store the knowledge graph and created networks.
-- The local folders: ./neo4j/logs, ./neo4j/conf, ./neo4j/plugins are mapped into the sbml4jdb container
-- The local folder ./sbml4j/logs is mapped into the sbml4j container
-- The local folder ./database_backups is mapped into the temporary containers "db_setup" and "db_backup" to facilitate database creation form a tar.gz and database backup to the tar.gz respectively
+- sbml4j_neo4j_vol: used to store the knowledge graph and created networks.
+- The local folder ./neo4j_data is used by the temporary services "sbml4j_db_setup" and "sbml4j_db_backup" to setup and backup the network database respectively. See instructions below for details
+- The local folder ./scripts is used by the temporary service "sbml4j_db_setup" to store the script "db_setup.sh" for setting up the sbml4j-database volume
 - arangodb_data_container: database directory to store the collection data (username, jobid, json, network uuids)
 - arangodb_apps_data_container: apps directory to store any extensions
 
