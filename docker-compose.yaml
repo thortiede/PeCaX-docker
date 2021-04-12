@@ -76,26 +76,22 @@ services:
         depends_on:
             - flask
             - nginx
+
     sbml4j_db_setup:
         image: alpine
         volumes:
             - sbml4j_neo4j_vol:/vol
-            - ./neo4j_backups:/neo4j_backups
-        command: ["/bin/sh", "-c", "cd /vol && tar xfz /neo4j_backups/pecax.tar.gz --strip 1 && cd .. && chown -R 7474:7474 vol && chmod 600 /vol/conf/neo4j.conf"]
+            - ./neo4j_data:/data
+            - ./scripts:/script
+        command: ["/bin/sh", "-c", "cd /script && chmod a+x db_setup.sh && ./db_setup.sh"]
      
     sbml4j_db_backup:
         image: alpine
         volumes:
-            - ./neo4j:/neo4j
-            - ./neo4j_backups:/neo4j_backups
-        command: ["/bin/sh", "-c", "cd /neo4j_backups && tar cfz pecax.tar.gz /neo4j"]
+            - sbml4j_neo4j_vol:/vol
+            - ./neo4j_data:/neo4j_data
+        command: ["/bin/sh", "-c", "cd /neo4j_data && tar cfz pecax.tar.gz /vol/data/"]
       
-    apoc_install:
-        image: alpine
-        volumes:
-            - ./neo4j/plugins:/plugins
-        command: ["/bin/sh", "-c", "cd /plugins && wget https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.1.0.2/apoc-4.1.0.2-all.jar"]
-    
     sbml4jdatabase:
         image: neo4j:4.1
         container_name: sbml4jdb
