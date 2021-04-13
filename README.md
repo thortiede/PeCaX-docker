@@ -6,7 +6,7 @@ Please refer this document for implementation of the application. Documentation 
 ## Usage with Docker
 Requirements: Docker Engine release 1.13.0+, Compose release 1.10.0+.
 
-Please make sure that you have 55 GB of physical empty space on your Docker Disk Image, and ports 3030, 3000, 8529, 7474, 7687, 8080 are not being used by another application.
+Please make sure that you have 55 GB of physical empty space on your Docker Disk Image, and ports 3030, 3000, 8529 are not being used by another application. For setting up an initial network database (see below) the port 8080 will be used, unless otherwise configured.
 
 To run the pipeline for the first time, please follow the steps given below.
 
