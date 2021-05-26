@@ -115,7 +115,7 @@ services:
         image: pecax/sbml4j:latest
         container_name: sbml4j
         volumes:
-            - sbml4j_logs:/logs
+            - sbml4j_service_vol:/logs
         environment:
             - SPRING_PROFILES_ACTIVE=test
             - SPRING_DATA_NEO4j_URI=bolt://sbml4jdb:7687
@@ -132,16 +132,16 @@ services:
             - sbml4j.context.direction=both
             - SBML4J_OUTPUT_HIDE_MODEL_U-U-I-DS=False
             - SBML4J_NETWORK_HARD-DELETE=True
-            - SBML4J_FORCE-DELETE-OF-PUBLIC-NETWORK=False
-            - SBML4J_DELETE-EXISTING=True
-            - SBML4J_DELETE-DERIVED=True
+            - SBML4J_NETWORK_FORCE-DELETE-OF-PUBLIC-NETWORK=False
+            - SBML4J_NETWORK_DELETE-EXISTING=True
+            - SBML4J_NETWORK_DELETE-DERIVED=True
             - SBML4J_NETWORK_USE-SHARED-PATHWAY-SEARCH=False
-            - sbml4j.network.public-user=sbml4j
-            - sbml4j.network.show-inactive-networks=false
-            - sbml4j.network.allow-inactive-duplicates=true
+            - SBML4J_NETWORK_PUBLIC-USER=sbml4j
+            - SBML4J_NETWORK_SHOW-INACTIVE-NETWORKS=false
+            - SBML4J_NETWORK_ALLOW-INACTIVE-DUPLICATES=true
             - SBML4J_ANNOTATION_APPEND=True
             - SBML4J_ANNOTATION_KEGGGENESSEPARATOR=+
-            - SBML4J_annotation_annotate-with-links=True
+            - SBML4J_ANNOTATION_ANNOTATE-WITH-LINKS=True
             - sbml4j.csv.matching-column-name[0]=gene name
             - sbml4j.csv.matching-column-name[1]=genename
             - sbml4j.csv.matching-column-name[2]=gene.name
@@ -159,14 +159,14 @@ services:
             - SBML4J_externalresources_keggdatabase_pathway-search-prefix=https://www.genome.jp/dbget-bin/www_bfind_sub?dbkey=pathway&keywords=
         depends_on:
             - "sbml4jdatabase"
-        expose:
-            - "8080"
+        ports:
+            - "8080:8080"
         restart: on-failure
 volumes:
     clinvap_uploads:
     clinvap_downloads:
     clinvap_conf:
-    sbml4j_logs:
+    sbml4j_service_vol:
     sbml4j_neo4j_vol:
     arangodb_data_container:
     arangodb_apps_data_container:

@@ -14,15 +14,16 @@ mkdir -p /vol/logs
 
 # 4. create /vol/conf
 mkdir -p /vol/conf
-touch /vol/conf/neo4j.conf
+[ -e /conf/neo4j.conf ] && cp /conf/neo4j.conf /vol/conf
 
 # 5. check if data is there and copy it
 cd /
 mkdir -p /vol/data
-[ -e /data/pecax.tar.gz ] && tar x -C /vol/data -z -f /data/pecax.tar.gz --strip 1  
+mkdir -p /vol/data/transactions
+mkdir -p /vol/data/databases
 
 # 6. Fix permission settings
-chown -R 7474:7474 vol
+chown -R 7474:7474 /vol
 chmod 600 /vol/conf/neo4j.conf
 
 
