@@ -86,15 +86,6 @@ This will create two files named *my-backup-neo4j.dump* and *my-backup-system.du
 
 ## Creating a network database
 
-PeCaX uses SBML4j for storing, creating and managing the biological networks that are used for visualisation.
-SBML4j needs to be initialized with appropriate data in order to create the visualisations.
-The database needs to have a network mapping with "Drugtarget" annotations available to create sensible networks in the application.
-SBML4j can be configured to use any mapping available using the configuration parameter
-
-	OVERVIEWNETWORK_DEFAULT_BASE-NETWORK-NAME="Network-Name"
-
-in the docker-compose.yaml file.
-
 ### Preparation
 
 #### Accessibilty of the SBML4J Service in the PeCaX ecosystem
