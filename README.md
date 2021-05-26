@@ -65,9 +65,12 @@ PeCaX uses several volumes to store data and work files. They are briefly descri
 The networks are stored in a docker volume and are thus persisted between individual PeCaX sessions.
 If you however delete or prune your docker volumes, while the service is not running, the network volume will be deleted and you will have to rerun
 
-	docker-compose up sbml4j_db_setup
+```bash
+./sbml4j_setup.sh -s pecax-base
+```
 
-This will use the network database that has been previously saved and resides in the local subfolder "neo4j_data" as a gzipped tar-archive named "pecax.tar.gz".
+This will use the network database that has been previously saved (see below) and resides in the local subfolder "db_backups" with the names pecax-base-neo4j.dump and pecax-base-system.dump for the actual network database and systems database respectively.
+
 For generating a database refer to section "Creating a network database" below.
 
 ## Backing up the network database
@@ -75,11 +78,11 @@ For generating a database refer to section "Creating a network database" below.
 For your previous networks to be available after a prune or delete of the volumes you have to save a backup of the network database.
 You can do this with
 
-	docker-compose up sbml4j_db_backup
+```bash
+./sbml4j_setup.sh -b my-backup
+```
 
-This will create a file named "pecax.tar.gz" in the local sub-folder "./neo4j_data".
-Be aware that the file will be overwritten if it exists. 
-Make sure to backup your previously saved database if you intent to keep them.
+This will create two files named *my-backup-neo4j.dump* and *my-backup-system.dump* in the local sub-folder *db_backups*.
 
 ## Creating a network database
 
@@ -233,7 +236,7 @@ curl -v
           "description":"This is the Collection for the BMC Publication", \
           "sourcePathwayUUIDs":["909520db-8ca9-40df-bffe-af9e48e93c48","9d959b42-f1da-4061-960b-4b58e1ba3c16"]}' \
      -o response.pwcoll \
-   http://192.168.0.69:8080/sbml4j/pathwayCollection 
+   http://localhost:8080/sbml4j/pathwayCollection 
 ```
 
 A simple python call can look something like this:
@@ -276,8 +279,8 @@ You will need a free account on drugbank.ca to gain access to this file, which i
 You will have to agree to these terms and conditions to continue with the next steps described here.
 We used the 'Drug target identifiers' file for all drug groups to get a broad view on available and possible drugs and the genes and geneproducts they target.
 In order to reproduce the results found in the publication two preprocessing steps need to be performed:
-a) Filter out all rows that are not targeting genes in Humans (column 'Species').
-b) Consolidate rows with the same 'ID' into one row, combining the elements in the 'Drug IDs' of all those rows into one.
+  1. Filter out all rows that are not targeting genes in Humans (column 'Species').
+  2. Consolidate rows with the same 'ID' into one row, combining the elements in the 'Drug IDs' of all those rows into one.
 
 We leave it up to the reader to perform these steps.
 TODO: Ask Mirjam if we can use her script here and provide the user with it.
@@ -296,10 +299,10 @@ If you want to use a different name, make sure to also change the appropriate co
 You can use the curl command to upload a csv file and annotate the created network mapping with the contained data:
 ```bash
 curl -v
-     -F upload=@drugbank_data.csv \
-     -F "type"="Drugtarget" \
-     -F "networkName"="PeCaX-Base" \
-     -o response.drugbank \
+     -F upload=@drugbank_data.csv
+     -F "type"="Drugtarget"
+     -F "networkName"="PeCaX-Base"
+     -o response.drugbank
    http://localhost:8080/sbml4j/networks/a68645cb-f3bb-49d3-b05f-7f6f05debba3/csv
 ```
 
@@ -324,7 +327,7 @@ Use the provided script to backup the database:
 ./sbml4j_setup.sh -b pecax_base
 ```
 
-This will create two '.dump' files in the **db_backup* folder containing the database backup you just created.
+This will create two '.dump' files in the **db_backups** folder containing the database backup you just created.
 
 ### 10. Restoring the state of the database
 You can revert your database back to the previously saved state by using:
@@ -333,8 +336,8 @@ You can revert your database back to the previously saved state by using:
 ./sbml4j_setup.sh -s pecax_base 
 ```
 ### Post-Steps
-For security reason it is advised to reset the port setting for the sbml4j service as described above.
-Make sure to backup your database dumps at a save location for later reference.
+  1. For security reason it is advised to reset the port setting for the sbml4j service as described above.
+  2. Make sure to backup your database dumps at a save location for later reference.
 
 ### KEGG Pathway Maps used in the demo version
 Here is a list of the KEGG pathway maps used in the PeCaX publication.
