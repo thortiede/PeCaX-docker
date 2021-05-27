@@ -49,6 +49,7 @@ To run the pipeline for the first time, please follow the steps given below.
 
 ### We recommend using full screen to enjoy the full experience.
 
+---
 
 ## Information about docker volumes
 
@@ -60,6 +61,8 @@ PeCaX uses several volumes to store data and work files. They are briefly descri
 - arangodb_data_container: database directory to store the collection data (username, jobid, json, network uuids)
 - arangodb_apps_data_container: apps directory to store any extensions
 
+---
+
 ## Initializing a network database for use with PeCaX
 
 The networks are stored in a docker volume and are thus persisted between individual PeCaX sessions.
@@ -69,9 +72,11 @@ If you however delete or prune your docker volumes, while the service is not run
 ./sbml4j.sh -s pecax-base
 ```
 
-This will use the network database that has been previously saved (see below) and resides in the local subfolder "db_backups" with the names pecax-base-neo4j.dump and pecax-base-system.dump for the actual network database and systems database respectively.
+This will use the network database that has been previously saved (see below) and resides in the local subfolder *db_backups* with the names *pecax-base-neo4j.dump* and *pecax-base-system.dump* for the actual network database and systems database respectively.
 
-For generating a database refer to section "Creating a network database" below.
+For generating a database refer to section [Creating a network database](#creating-a-network-database) below.
+
+---
 
 ## Backing up the network database
 
@@ -83,6 +88,8 @@ You can do this with
 ```
 
 This will create two files named *my-backup-neo4j.dump* and *my-backup-system.dump* in the local sub-folder *db_backups*.
+
+---
 
 ## Creating a network database
 
@@ -151,6 +158,7 @@ pathwayUUIDs = []
 
 For more details see the pysbml4j documentation at https://github.com/kohlbacherlab/pysbml4j .
 
+---
 
 ### 1. Selecting a source
 
@@ -445,6 +453,8 @@ The KEGG Release used is: 97.0+/02-16, Feb 21.
 - hsa05230 Central carbon metabolism in cancer
 - hsa05231 Choline metabolism in cancer
 - hsa05235 PD-L1 expression and PD-1 checkpoint pathway in cancer
+
+---
 
 #### References
 ##### KEGGtranslator
