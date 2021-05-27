@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Default volume name should be prefixed with sbml4j-compose
-default_volume_prefix=pecax-docker
+default_volume_prefix="$(echo ${PWD##*/} | tr '[A-Z]' '[a-z]')"
 
 function show_usage() {
   echo "Usage: "
@@ -32,7 +32,7 @@ function show_usage() {
   echo "${0} -i -r mydbbackup"
   echo "   This will (re-)create the volumes for SBML4J (as described above) and load the database backup from the database dunmp files as described above."
   echo "${0} -i -r mydbbackup -p my-compose"
-  echo "   This will (re-)create the volumes with names my-compose_sbml4j_neo4j_vol instead of the default name sbml4j-compose_sbml4j_neo4j_vol for SBML4J (as described above) and load the database backup from the database dunmp files as described above."
+  echo "   This will (re-)create the volumes with names my-compose_sbml4j_neo4j_vol instead of the default name ${default_volume_prefix}_sbml4j_neo4j_vol (derived from the current directory) for SBML4J (as described above) and load the database backup from the database dunmp files as described above."
   echo "   This needs to be used when you want to use these volumes in a different compose setup"
 }
 
@@ -132,33 +132,37 @@ if [ "$i" -lt "1" ]
    then
      echo "No argument given. Please give one or two arguments."
      show_usage
-     exit 
+     exit 0
 elif [ "$i" -lt "10" ]
    then
-     echo "Performing installation of prerequisits for running sbml4j"
+     echo "Performing installation of prerequisits for running sbml4j."
      check_prefix_name
      install $prefix_name
-     exit
+     echo "Successfully installed prerequisists for running sbml4j."
+     exit 0
 elif [ "$i" -lt "11" ]
    then
-     echo "Performing database setup from file: $backup_name"
+     echo "Restoring database from dumps: $backup_name-neo4j.dump and $backup_name-system.dump."
      check_prefix_name  
      setup_db $backup_name $prefix_name
-     exit
+     echo "Successfully restored database."
+     exit 0
 elif [ "$i" -lt "12" ]
    then
-     echo "Performing installation of prerequisits for running sbml4j"
+     echo "Performing installation of prerequisits for running sbml4j."
      check_prefix_name
      install $prefix_name
-     echo "Restoring database state from backup files with base-name: ${backup_name}"
+     echo "Restoring database from dumps: $backup_name-neo4j.dump and $backup_name-system.dump."
      setup_db $backup_name $prefix_name
-     exit
+     echo "Successfully installed prerequisits and resored database state."
+     exit 0
 elif [ "$i" -lt "101" ]
    then
-     echo "Performing database backup into files with base-name: $backup_name"
+     echo "Performing database backup into dump-files $backup_name-neo4j.dump and $backup_name-system.dump."
      check_prefix_name
      backup_db $backup_name $prefix_name
-     exit
+     echo "Successfully created database backup into dumps: $backup_name-neo4j.dump and $backup_name-system.dump." 
+     exit 0
 fi
          
 

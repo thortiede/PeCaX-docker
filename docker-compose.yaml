@@ -77,21 +77,6 @@ services:
             - flask
             - nginx
 
-    sbml4j_db_setup:
-        image: alpine
-        volumes:
-            - sbml4j_neo4j_vol:/vol
-            - ./neo4j_data:/data
-            - ./scripts:/script
-        command: ["/bin/sh", "-c", "cd /script && chmod a+x db_setup.sh && ./db_setup.sh"]
-     
-    sbml4j_db_backup:
-        image: alpine
-        volumes:
-            - sbml4j_neo4j_vol:/vol
-            - ./neo4j_data:/neo4j_data
-        command: ["/bin/sh", "-c", "cd /neo4j_data && tar cfz pecax.tar.gz /vol/data/"]
-      
     sbml4jdatabase:
         image: neo4j:4.1
         container_name: sbml4jdb
@@ -145,11 +130,13 @@ services:
             - sbml4j.csv.matching-column-name[0]=gene name
             - sbml4j.csv.matching-column-name[1]=genename
             - sbml4j.csv.matching-column-name[2]=gene.name
-            - sbml4j.csv.matching-column-name[3]=gene symbol
-            - sbml4j.csv.matching-column-name[4]=genesymbol
-            - sbml4j.csv.matching-column-name[5]=gene.symbol
-            - sbml4j.csv.matching-column-name[6]=gene
-            - sbml4j.csv.matching-column-name[7]=symbol 
+            - sbml4j.csv.matching-column-name[3]=gene_name
+            - sbml4j.csv.matching-column-name[4]=gene symbol
+            - sbml4j.csv.matching-column-name[5]=genesymbol
+            - sbml4j.csv.matching-column-name[6]=gene.symbol
+            - sbml4j.csv.matching-column-name[7]=gene_symbol
+            - sbml4j.csv.matching-column-name[8]=gene
+            - sbml4j.csv.matching-column-name[9]=symbol 
             - SBML4J_externalresources_mdanderson_add-md-anderson-annotation=True
             - SBML4J_externalresources_mdanderson_genelist=ABL1, AKT1, ALK, BRAF, CDK4, CDK6, CDKN2A, EGFR, ERBB2, FGFR1, FGFR2, FLT3, IDH1, KDR, KIT, KRAS, MDM2, MET, NRAS, NTRK1, NTRK2, PDGFRA, PIK3CA, PIK3R1, PTCH1, PTEN, PTPN11, PET, ROS1, SMO
             - SBML4J_externalresources_mdanderson_baseurl=https://pct.mdanderson.org/home/

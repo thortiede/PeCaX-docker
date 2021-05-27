@@ -60,7 +60,7 @@ PeCaX uses several volumes to store data and work files. They are briefly descri
 - arangodb_data_container: database directory to store the collection data (username, jobid, json, network uuids)
 - arangodb_apps_data_container: apps directory to store any extensions
 
-Volumes created by docker compose are prefixed with the file name (without extension) that created the services (i.e. pecax-docker).
+Volumes created by docker compose are prefixed with the folder name where the docker-compose.yaml file resides that created the services (i.e. pecax-docker).
 
 ## Information about local folders
 
@@ -80,6 +80,8 @@ If you however delete or prune your docker volumes, while the service is not run
 
 This will use the network database that has been previously saved (see below) and resides in the local subfolder *db_backups* with the names *pecax-base-neo4j.dump* and *pecax-base-system.dump* for the actual network database and systems database respectively.
 
+IMPORTANT: Make sure to stop all services (at least the sbml4jdb container) before running, otherwise the database will not be restored correctly and might be corrupted.
+
 For generating a database refer to section [Creating a network database](#creating-a-network-database) below.
 
 ---
@@ -94,6 +96,8 @@ You can do this with
 ```
 
 This will create two files named *my-backup-neo4j.dump* and *my-backup-system.dump* in the local sub-folder *db_backups*.
+
+IMPORTANT: Make sure to stop all services (at least the sbml4jdb container) before running, otherwise the database will not be backed up correctly and the database dumps or the running database might be corrupted.
 
 ---
 
@@ -115,17 +119,6 @@ to
 	    - "8080:8080"
 
 Once you are finished with creating and setting up your desired network database you are advised to revert this change.
-
-#### Initialize the docker volumes needed using the provided script
-To intialize the volumes used for the network database and the SBML4j service use the sbml4j.sh script.
-
-Inside the main 'PeCaX-docker' directory run
-
-```bash
-./sbml4j.sh -i
-```
-
-to install all prerequisits for the SBML4j service and it's database.
 
 #### Communicating with the SBML4j service
 
@@ -170,23 +163,38 @@ For more details see the pysbml4j documentation at https://github.com/kohlbacher
 
 ---
 
-### 1. Selecting a source
+### 1. Initialize the docker volumes needed using the provided script
+To intialize the volumes used for the network database and the SBML4j service use the sbml4j.sh script.
+
+Inside the main 'PeCaX-docker' directory run
+
+```bash
+./sbml4j.sh -i
+```
+
+to install all prerequisits for the SBML4j service and it's database.
+If your working directory (where you run the docker-compose commands) is named differently from 'PeCaX-docker' (case insensitive) your volumes will get this directory name (in lower case format) as prefix. If you need to change the prefix (because you intend run the *docker-compose* command in a different folder than this script), you need to add the option *-p my_prefix* to the above call to make sure that the volumes are prefixed with the correct name.
+If you are unsure, omit the -p option and run the *./sbml4j.sh -i* script and the *docker-compose* commands from the same directory (which is where they reside and which is the recommended default).
+In case you forgot, you can remove the previously created volumes and rerun the above command with the additional *-p* option.
+
+### 2. Selecting a source
 
 The demo version of PeCaX accesible at https://pecax.informatik.uni-tuebingen.de uses a selection of 61 pathway maps from the KEGG pathway database.
-If you want to recreate this version of PeCaX in your local environment, follow steps 2 and 3 below to download and translate the KEGG pathways used.
+If you want to recreate this version of PeCaX in your local environment, follow steps 3 and 4 below to download and translate the KEGG pathways used.
 If you want to use different source models head over to https://github.com/kohlbacherlab/sbml4j to learn about the necessary details to look for when using SBML models with SBML4j for non-metabolic network-mappings.
 
 
-### 2. Get the KEGG pathway files
+### 3. Get the KEGG pathway files
 Listing 1 shows the pathway identifiers of the KEGG pathways used in this publication.
 KEGG provides their own markup language files for their pathways.
 You can download these kgml files directly from their website (kegg.jp) or through their API.
 Make sure you understand the license requirements before starting the download (see https://www.kegg.jp/kegg/rest/ for details).
 
-### 3. Translate pathway files
+### 4. Translate pathway files
 In order for SBML4j to be able to process the KEGG pathway models they need to be translated to the SBML format.
 We used the KEGGtranslator version 2.5 \[[1](#keggtranslator)\] for this.
-Please find KEGGtranslator here: http://www.cogsys.cs.uni-tuebingen.de/software/KEGGtranslator/.
+Please find KEGGtranslator more info on KEGGtranslator here: http://www.cogsys.cs.uni-tuebingen.de/software/KEGGtranslator/.
+Go to http://www.cogsys.cs.uni-tuebingen.de/software/KEGGtranslator/downloads/index.htm and download the version 2.5 executable jar file, which you can run using your local java runtime installation.
 We used the following command line options for translating the pathway maps in addition to providing input and output directories for the kgml and sbml files respectively:
 
 	--format SBML_CORE_AND_QUAL 
@@ -197,7 +205,17 @@ We used the following command line options for translating the pathway maps in a
 	--use-groups-extension FALSE 
 	--remove-pathway-references TRUE
 
-### 4. Upload models to SBML4j
+### 5. Upload models to SBML4j
+You need a running SBML4j service for the next steps to complete.
+To get that run:
+
+```bash
+docker-compose up sbml4j
+```
+Once you see the message 
+> Started Sbml4jApplication in x.xxx seconds
+the service is up an running and you can issue http request to the exposed API.
+
 By issuing a POST request to the '/sbml' endpoint one or multiple SBML formatted xml files can be uploaded to SBML4j.
 For best performance we recommend uploading the model files one by one or in small chunks of 5 models or less.
 Choose the same organism, source and version parameters for all pathway maps to ensure proper integration in the next step.
@@ -238,7 +256,7 @@ Please note that the files provided need to be in a list, even when uploading on
 resp = client.uploadSBML([/absolute/path/to/sbml/model/onlyfile.xml], "hsa", "KEGG", "97.0")
 ```
 
-### 5. Create pathway collection
+### 6. Create pathway collection
 A network mapping always refers to one pathway instance in the database.
 In order to build network mappings for multiple KEGG pathways we combine all entities, relations and reactions in a collection pathway element which can be used subsequently to generate network mappings.
 The endpoint /pathwayCollection accepts a POST request with a JSON formatted body containing the elements: name, description and sourcePathwayUUIDs.
@@ -268,7 +286,7 @@ print(collUUID)
 ```
 The endpoint returns the UUID of the created collection pathway, which can be used in the following calls to create the network mappings.
 
-### 6. Create network mappings 
+### 7. Create network mappings 
 To create the network mappings from a pathway a POST request to the /mapping endpoint has to be issued.
 The UUID of the pathway is part of the URL as can be seen here:
 
@@ -293,7 +311,7 @@ The UUIDs are generated by SBML4j and will differ every time you run this proced
 The artifical mapping type 'PATHWAYMAPPING' can be used to not restrict the elements or relations being mapped and will map every entity, relation and reaction into a network mapping instance.
 Such a network mapping has been used for PeCaX to allow for the most broad view on the network context of the genes of interest.
 
-### 7. Prepare the Drugbank csv file
+### 8. Prepare the Drugbank csv file
 You can find the drugtarget information used in PeCaX at: https://go.drugbank.com/releases/latest#protein-identifiers
 You will need a free account on drugbank.ca to gain access to this file, which is released under the 'Creative Common’s Attribution-NonCommercial 4.0 International License.'
 You will have to agree to these terms and conditions to continue with the next steps described here.
@@ -352,7 +370,7 @@ while(j<=nrow(csv) && i <= (nrow(csv)-1)) {
 write.csv(newcsv,"all_hsa_cleaned.csv", row.names = FALSE)
 ```
 
-### 8. Add the Drugbank csv file to the network mappings
+### 9. Add the Drugbank csv file to the network mappings
 Using the csv upload functionality of SBML4j arbitrary data can be annotated onto network nodes.
 The endpoint expects a 'type' parameter, giving a character string describing the type of annotation that is added, in our example the term 'Drugtarget' is used, as the csv marks every genesymbol given as a drug target for the provided list of 'Drug IDs'.
 
@@ -384,8 +402,12 @@ Now your installation of PeCaX should contain the same base network-database tha
 > https://pecax.informatik.uni-tuebingen.de
 
 
-### 9. Save the network database to reset your networks in PeCaX in the future
-Use the provided script to backup the database: 
+### 10. Save the network database to reset your networks in PeCaX in the future
+Before backing up or restoring the network database you need to stop the service with
+
+    docker-compose down
+
+Then you can use the provided script to backup the database: 
 
 ```
 ./sbml4j.sh -b pecax-base
