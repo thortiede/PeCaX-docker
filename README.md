@@ -66,7 +66,7 @@ The networks are stored in a docker volume and are thus persisted between indivi
 If you however delete or prune your docker volumes, while the service is not running, the network volume will be deleted and you will have to rerun
 
 ```bash
-./sbml4j_setup.sh -s pecax-base
+./sbml4j.sh -s pecax-base
 ```
 
 This will use the network database that has been previously saved (see below) and resides in the local subfolder "db_backups" with the names pecax-base-neo4j.dump and pecax-base-system.dump for the actual network database and systems database respectively.
@@ -79,7 +79,7 @@ For your previous networks to be available after a prune or delete of the volume
 You can do this with
 
 ```bash
-./sbml4j_setup.sh -b my-backup
+./sbml4j.sh -b my-backup
 ```
 
 This will create two files named *my-backup-neo4j.dump* and *my-backup-system.dump* in the local sub-folder *db_backups*.
@@ -315,7 +315,7 @@ Now your installation of PeCaX should contain the same base network-database tha
 Use the provided script to backup the database: 
 
 ```
-./sbml4j_setup.sh -b pecax_base
+./sbml4j.sh -b pecax-base
 ```
 
 This will create two '.dump' files in the **db_backups** folder containing the database backup you just created.
@@ -324,7 +324,7 @@ This will create two '.dump' files in the **db_backups** folder containing the d
 You can revert your database back to the previously saved state by using:
 
 ```
-./sbml4j_setup.sh -s pecax_base 
+./sbml4j.sh -s pecax-base 
 ```
 ### Post-Steps
   1. For security reason it is advised to reset the port setting for the sbml4j service as described above.
