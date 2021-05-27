@@ -62,8 +62,6 @@ PeCaX uses several volumes to store data and work files. They are briefly descri
 
 Volumes created by docker compose are prefixed with the file name (without extension) that created the services (i.e. pecax-docker).
 
----
-
 ## Information about local folders
 
 - The local folder *db_backups* is used by the *sbml4j.sh* script to store the network database backups. See instructions below for details
@@ -356,11 +354,10 @@ write.csv(newcsv,"all_hsa_cleaned.csv", row.names = FALSE)
 
 ### 8. Add the Drugbank csv file to the network mappings
 Using the csv upload functionality of SBML4j arbitrary data can be annotated onto network nodes.
-A POST request to the /networks/{UUID}/csv endpoint will read in the provided csv file in the form data, find the row for matching the gene symbol and add all remaining rows as annotation on this node (or multiple nodes if applicable, i.e. if no node with the exact gene symbol can be found, all secondary gene names will be searched for the given symbol which can result in multiple nodes being annotated with the data from one row).
-The endpoint additionally expects a 'type' parameter, giving a character string describing the type of annotation that is added, in our example the term 'Drugtarget' is used, as the csv marks every genesymbol given as a drug target for the provided list of 'Drug IDs'.
-The nodes therefore will get the additional Boolean annotation of 'Drugtarget=true' if they are annotated by this step.
-In addition all additional columns with content from the csv file get annotated on said node(s). 
+The endpoint expects a 'type' parameter, giving a character string describing the type of annotation that is added, in our example the term 'Drugtarget' is used, as the csv marks every genesymbol given as a drug target for the provided list of 'Drug IDs'.
+
 Please note, that since there can be multiple Drugs targeting the same gene or gene-product, the annotation-names will include a numbering scheme in addition to the column names given in the csv file.
+
 Make sure to set the 'networkName' to "PeCaX-Base" (case-sensitive).
 SBML4j for PeCaX is configured to use the network with this name as basis for calculating the networks by default.
 If you want to use a different name, make sure to also change the appropriate config parameter in the 'docker-compose.yaml' file.
@@ -405,7 +402,7 @@ You can revert your database back to the previously saved state by using:
 
 ---
 
-### Post-Steps
+### Recommended post-processing steps
   1. For security reason it is advised to reset the port setting for the sbml4j service as described above.
   2. Make sure to backup your database dumps at a save location for later reference.
 
