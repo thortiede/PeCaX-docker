@@ -5,33 +5,33 @@ default_volume_prefix=pecax-docker
 
 function show_usage() {
   echo "Usage: "
-  echo "${0} -h | -b | -i | -a | -s | -p {argument}"
+  echo "${0} -h | -b | -i | -a | -r | -p {argument}"
   echo "Details:"
   echo "This script is used to either setup the SBML4J volumes, setup the database from database dumps, or backup the databases into a database dump."
-  echo "You can either use any one option alone, or use the -i and -s options together."
+  echo "You can either use any one option alone, or use the -i and -r options together."
   echo "  -h : Print this help"
   echo "  -b {argument} :"
   echo "     Backup the current database into the backup files named by the {argument}"
   echo "  -i :"
   echo "     Install prerequisits for SBML4J."
   echo "     This will recreate the volumes used for SBML4J and the (empty) neo4j database."
-  echo "  -s {argument} :"
-  echo "     Setup the neo4j database from the database dumps from the files named by the {argument}"
+  echo "  -r {argument} :"
+  echo "     Restore the neo4j database from the database dumps in the files with prefix given by the {argument}"
   echo "  -p {argument} :"
   echo "     Use {argument} as prefix for the volumes created, i.e. argument_sbml4j_service_vol"
-  echo "     Use in conjuction with the -b, -i, -s flags."
+  echo "     Use in conjuction with the -b, -i, -r flags."
   echo " "
   echo "Examples:"
   echo "${0} -i :"
   echo "   This will (re)-create the volumes for SBML4J and use the default api definition file ${default_api_def} as source for the api page"
   echo "${0} -b mydbbackup"
   echo "   This will create a database dump of the neo4j and system database in the files mydbbackup-neo4j.dump and mydbbackup-system.dump respectively"
-  echo "${0} -s mydbbackup"
-  echo "   This will load a database dump from the neo4j and system database dump files mydbbackup-neo4j.dump and mydbbackup-system.dump."
+  echo "${0} -r mydbbackup"
+  echo "   This will resore a database dump from the neo4j and system database dump files mydbbackup-neo4j.dump and mydbbackup-system.dump."
   echo "   WARNING: Any data currently stored in the database will be overwritten"
-  echo "${0} -i -s mydbbackup"
+  echo "${0} -i -r mydbbackup"
   echo "   This will (re-)create the volumes for SBML4J (as described above) and load the database backup from the database dunmp files as described above."
-  echo "${0} -i -s mydbbackup -p my-compose"
+  echo "${0} -i -r mydbbackup -p my-compose"
   echo "   This will (re-)create the volumes with names my-compose_sbml4j_neo4j_vol instead of the default name sbml4j-compose_sbml4j_neo4j_vol for SBML4J (as described above) and load the database backup from the database dunmp files as described above."
   echo "   This needs to be used when you want to use these volumes in a different compose setup"
 }
@@ -89,7 +89,7 @@ function backup_db() {
 
 declare -i i=0
 
-while getopts hb:is:p: flag
+while getopts hb:ir:p: flag
 do
    case "${flag}" in
        h) show_usage
@@ -103,7 +103,7 @@ do
        i) do_install=True
           i=i+1
           ;;
-       s) backup_name=${OPTARG}
+       r) backup_name=${OPTARG}
           do_setup=True
           #echo "Performing database setup from file: $backup_name"
           i=i+10
