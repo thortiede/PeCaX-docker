@@ -103,7 +103,7 @@ This will create two files named *my-backup-neo4j.dump* and *my-backup-system.du
 
 ### Preparation
 
-#### Accessibilty of the SBML4J Service in the PeCaX ecosystem
+#### Accessibilty of the SBML4j Service in the PeCaX ecosystem
 
 For security reasons the SBML4j service is not exposed to the host machine, so to be able to directly interact with SBML4j you will need to temporarily change the docker-compose.yaml file.
 In the service block "sbml4j" you need to change 
@@ -127,9 +127,9 @@ Inside the main 'PeCaX-docker' directory run
 ./sbml4j.sh -i
 ```
 
-to install all prerequisits for the SBML4J service and it's database.
+to install all prerequisits for the SBML4j service and it's database.
 
-#### Communicating with the SBML4J service
+#### Communicating with the SBML4j service
 
 The following instructions provide examples for the communication with the REST interface of SBML4j using curl and python.
 Alternatively you can use a tool of your choice to issue GET and POST http requests to the SBML4j service, like Postman.
@@ -176,7 +176,7 @@ For more details see the pysbml4j documentation at https://github.com/kohlbacher
 
 The demo version of PeCaX accesible at https://pecax.informatik.uni-tuebingen.de uses a selection of 61 pathway maps from the KEGG pathway database.
 If you want to recreate this version of PeCaX in your local environment, follow steps 2 and 3 below to download and translate the KEGG pathways used.
-If you want to use different source models head over to https://github.com/kohlbacherlab/sbml4j to learn about the necessary details to look for when using SBML models with SBML4J for non-metabolic network-mappings.
+If you want to use different source models head over to https://github.com/kohlbacherlab/sbml4j to learn about the necessary details to look for when using SBML models with SBML4j for non-metabolic network-mappings.
 
 
 ### 2. Get the KEGG pathway files
