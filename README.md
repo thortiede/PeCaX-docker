@@ -164,18 +164,21 @@ For more details see the pysbml4j documentation at https://github.com/kohlbacher
 ---
 
 ### 1. Initialize the docker volumes needed using the provided script
-To intialize the volumes used for the network database and the SBML4j service use the sbml4j.sh script.
+To intialize the volumes used for the network database and the SBML4j service use the *sbml4j.sh* script.
 
-Inside the main 'PeCaX-docker' directory run
+Inside the main directory (default: 'PeCaX-docker') run:
 
 ```bash
 ./sbml4j.sh -i
 ```
 
 to install all prerequisits for the SBML4j service and it's database.
-If your working directory (where you run the docker-compose commands) is named differently from 'PeCaX-docker' (case insensitive) your volumes will get this directory name (in lower case format) as prefix. If you need to change the prefix (because you intend run the *docker-compose* command in a different folder than this script), you need to add the option *-p my_prefix* to the above call to make sure that the volumes are prefixed with the correct name.
-If you are unsure, omit the -p option and run the *./sbml4j.sh -i* script and the *docker-compose* commands from the same directory (which is where they reside and which is the recommended default).
+If your working directory (where you run the docker-compose commands) is named differently from 'PeCaX-docker' (case insensitive) your volumes will get this directory name (in lower case format) as prefix.
+
+If you need to change the prefix (because you intend run the *docker-compose* command in a different folder than this script), you need to add the option *-p my_prefix* to the above call to make sure that the volumes are prefixed with the correct name.
 In case you forgot, you can remove the previously created volumes and rerun the above command with the additional *-p* option.
+
+If you are unsure, omit the -p option and run the *./sbml4j.sh -i* script and the *docker-compose* commands from the same directory (which is where they reside and which is the recommended default).
 
 ### 2. Selecting a source
 
@@ -185,7 +188,7 @@ If you want to use different source models head over to https://github.com/kohlb
 
 
 ### 3. Get the KEGG pathway files
-Listing 1 shows the pathway identifiers of the KEGG pathways used in this publication.
+[Section KEGG Pathway Maps used in the demo version](#kegg-pathway-maps-used-in-the-demo-version) shows the pathway identifiers of the KEGG pathways used in this publication.
 KEGG provides their own markup language files for their pathways.
 You can download these kgml files directly from their website (kegg.jp) or through their API.
 Make sure you understand the license requirements before starting the download (see https://www.kegg.jp/kegg/rest/ for details).
@@ -193,7 +196,7 @@ Make sure you understand the license requirements before starting the download (
 ### 4. Translate pathway files
 In order for SBML4j to be able to process the KEGG pathway models they need to be translated to the SBML format.
 We used the KEGGtranslator version 2.5 \[[1](#keggtranslator)\] for this.
-Please find KEGGtranslator more info on KEGGtranslator here: http://www.cogsys.cs.uni-tuebingen.de/software/KEGGtranslator/.
+Please find more info on KEGGtranslator here: http://www.cogsys.cs.uni-tuebingen.de/software/KEGGtranslator/.
 Go to http://www.cogsys.cs.uni-tuebingen.de/software/KEGGtranslator/downloads/index.htm and download the version 2.5 executable jar file, which you can run using your local java runtime installation.
 We used the following command line options for translating the pathway maps in addition to providing input and output directories for the kgml and sbml files respectively:
 
@@ -389,6 +392,8 @@ curl -v \
      -o response.drugbank \
    http://localhost:8080/sbml4j/networks/a68645cb-f3bb-49d3-b05f-7f6f05debba3/csv
 ```
+
+The uuid in the url (here a68645cb-f3bb-49d3-b05f-7f6f05debba3 as example) is the uuid of the *PATHWAYMAPPING* created in [Step 7. Create network mappings](#7-create-network-mappings) and can be found in the response.mapping file created in that section using the curl command. Be sure to replace the uuid shown here with your own uuid as it is specific to your database.
 
 The python package also offers this functionality:
 ```python
