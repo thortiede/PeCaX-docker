@@ -408,7 +408,7 @@ Now your installation of PeCaX should contain the same base network-database tha
 
 
 ### 10. Save the network database to reset your networks in PeCaX in the future
-Before backing up or restoring the network database you need to stop the service with
+Before backing up the network database you need to stop the service with
 
     docker-compose down
 
@@ -420,8 +420,12 @@ Then you can use the provided script to backup the database:
 
 This will create two '.dump' files in the **db_backups** folder containing the database backup you just created.
 
-### 10. Restoring the state of the database
-You can revert your database back to the previously saved state by using:
+### 11. Restoring the state of the database
+Before restoring the network database you need to stop the service with
+
+    docker-compose down
+
+Then you can revert your database back to the previously saved state by using:
 
 ```
 ./sbml4j.sh -r pecax-base 
