@@ -104,7 +104,7 @@ to
 Once you are finished with creating and setting up your desired network database you are advised to revert this change.
 
 #### Initialize the docker volumes needed using the probided script
-To intialize the volumes used for the network database and the SBML4j service use the sbml4j\_setup script.
+To intialize the volumes used for the network database and the SBML4j service use the sbml4j.sh script.
 
 Inside the main 'Pecax-docker' directory run
 
@@ -169,7 +169,7 @@ TODO: Is KPWD in a good enough state to be linked here?
 
 ### 3. Translate pathway files
 In order for SBML4j to be able to process the KEGG pathway models they need to be translated to the SBML format.
-We used the KEGGtranslator version 2.5 [1](#markdown-header-keggtranslator) for this.
+We used the KEGGtranslator version 2.5 \[ [1](#keggtranslator) \] for this.
 Please find KEGGtranslator here: http://www.cogsys.cs.uni-tuebingen.de/software/KEGGtranslator/.
 We used the following command line options for translating the pathway maps:
 
@@ -398,4 +398,4 @@ The KEGG Release used is: 97.0+/02-16, Feb 21.
 
 #### References
 ##### KEGGtranslator
-Wrzodek C, Dräger A, Zell A. KEGGtranslator: visualizing and converting the KEGG PATHWAY database to various formats. Bioinformatics. 2011 Aug 15;27(16):2314-5.
+\[1\] Wrzodek C, Dräger A, Zell A. KEGGtranslator: visualizing and converting the KEGG PATHWAY database to various formats. Bioinformatics. 2011 Aug 15;27(16):2314-5.
