@@ -169,8 +169,8 @@ TODO: Is KPWD in a good enough state to be linked here?
 
 ### 3. Translate pathway files
 In order for SBML4j to be able to process the KEGG pathway models they need to be translated to the SBML format.
-We used the KEGGtranslator version 2.5 for this.
-Please find KEGGtranslator here: (http://www.cogsys.cs.uni-tuebingen.de/software/KEGGtranslator/).
+We used the KEGGtranslator version 2.5 [1](#markdown-header-keggtranslator) for this.
+Please find KEGGtranslator here: http://www.cogsys.cs.uni-tuebingen.de/software/KEGGtranslator/.
 We used the following command line options for translating the pathway maps:
 
 	--format SBML_CORE_AND_QUAL 
@@ -395,3 +395,7 @@ The KEGG Release used is: 97.0+/02-16, Feb 21.
 - hsa05230 Central carbon metabolism in cancer
 - hsa05231 Choline metabolism in cancer
 - hsa05235 PD-L1 expression and PD-1 checkpoint pathway in cancer
+
+#### References
+##### KEGGtranslator
+Wrzodek C, Dräger A, Zell A. KEGGtranslator: visualizing and converting the KEGG PATHWAY database to various formats. Bioinformatics. 2011 Aug 15;27(16):2314-5.
