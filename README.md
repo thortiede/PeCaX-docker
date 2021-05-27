@@ -110,12 +110,12 @@ to
 
 Once you are finished with creating and setting up your desired network database you are advised to revert this change.
 
-#### Initialize the docker volumes needed using the probided script
+#### Initialize the docker volumes needed using the provided script
 To intialize the volumes used for the network database and the SBML4j service use the sbml4j.sh script.
 
 Inside the main 'Pecax-docker' directory run
 
-> ./sbml4j\_setup.sh -i
+> ./sbml4j.sh -i
 
 to install all prerequisits for the SBML4J service and it's database.
 
@@ -172,8 +172,6 @@ Listing 1 shows the pathway identifiers of the KEGG pathways used in this public
 KEGG provides their own markup language files for their pathways.
 You can download these kgml files directly from their website (kegg.jp) or through their API.
 Make sure you understand the license requirements before starting the download (see https://www.kegg.jp/kegg/rest/ for details).
-TODO: Is KPWD in a good enough state to be linked here?
-
 
 ### 3. Translate pathway files
 In order for SBML4j to be able to process the KEGG pathway models they need to be translated to the SBML format.
@@ -213,8 +211,13 @@ Be sure to at least save the provided 'uuid' (or 'UUID', they are identical) for
 Using the pysbml4j package uploading SBML models with python is as easy as:
 
 ```python
-resp = client.uploadSBML([/absolute/path/to/sbml/model/file1.xml, /absolute/path/to/sbml/model/file2.xml], "hsa", "KEGG", "97.0")
-print("The UUID of pathway in file1.xml is {}, of file2.xml it is {}".format(resp[0].get("uuid"), resp[1].get("uuid")))
+resp = client.uploadSBML([/absolute/path/to/sbml/model/file1.xml, 
+                          /absolute/path/to/sbml/model/file2.xml], 
+                          "hsa", 
+                          "KEGG",
+                          "97.0")
+print("The UUID of pathway in file1.xml is {}, of file2.xml it is {}"
+      .format(resp[0].get("uuid"), resp[1].get("uuid")))
 pathwayUUIDs.add(resp[0].get("uuid"))
 pathwayUUIDs.add(resp[1].get("uuid"))
 ```
@@ -237,19 +240,23 @@ curl -v \
      -H "Content-Type: application/json" \
      -d '{"name":"BMC_Collection", \
           "description":"This is the Collection for the BMC Publication", \
-          "sourcePathwayUUIDs":["909520db-8ca9-40df-bffe-af9e48e93c48","9d959b42-f1da-4061-960b-4b58e1ba3c16"]}' \
+          "sourcePathwayUUIDs":["909520db-8ca9-40df-bffe-af9e48e93c48", \
+                                "9d959b42-f1da-4061-960b-4b58e1ba3c16" \
+                               ] \
+         }' \
      -o response.pwcoll \
    http://localhost:8080/sbml4j/pathwayCollection 
 ```
 
 A simple python call making use of pysbml4j can look like this:
 ```python
-collUUID = client.createPathwayCollection("KEGG61-97.0", "Collection pathway for all 61 KEGG pathways", pathwayUUIDs)
-collUUID = collUUID[1:-1]
+collUUID = client.createPathwayCollection("KEGG61-97.0", 
+                  "Collection pathway for all 61 KEGG pathways", 
+                  pathwayUUIDs
+           )
 print(collUUID)
 ```
 The endpoint returns the UUID of the created collection pathway, which can be used in the following calls to create the network mappings.
-TODO: Unfortunately it returns it as a quoted string, which need to be trimmed for the actual UUID to be used further.
 
 ### 6. Create network mappings 
 To create the network mappings from a pathway a POST request to the /mapping endpoint has to be issued.
@@ -384,9 +391,13 @@ You can revert your database back to the previously saved state by using:
 ./sbml4j.sh -s pecax-base 
 ```
 
+---
+
 ### Post-Steps
   1. For security reason it is advised to reset the port setting for the sbml4j service as described above.
   2. Make sure to backup your database dumps at a save location for later reference.
+
+---
 
 ### KEGG Pathway Maps used in the demo version
 Here is a list of the KEGG pathway maps used in the PeCaX publication.
