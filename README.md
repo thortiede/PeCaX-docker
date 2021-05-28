@@ -188,7 +188,7 @@ If you want to use different source models head over to https://github.com/kohlb
 
 
 ### 3. Get the KEGG pathway files
-[Section KEGG Pathway Maps used in the demo version](#kegg-pathway-maps-used-in-the-demo-version) shows the pathway identifiers of the KEGG pathways used in this publication.
+Section [KEGG Pathway Maps used in the demo version](#kegg-pathway-maps-used-in-the-demo-version) shows the pathway identifiers of the KEGG pathways used in this publication.
 KEGG provides their own markup language files for their pathways.
 You can download these kgml files directly from their website (kegg.jp) or through their API.
 Make sure you understand the license requirements before starting the download (see https://www.kegg.jp/kegg/rest/ for details).
@@ -242,22 +242,62 @@ Be sure to at least save the provided 'uuid' (or 'UUID', they are identical) for
 Using the pysbml4j package uploading SBML models with python is as easy as:
 
 ```python
-resp = client.uploadSBML([/absolute/path/to/sbml/model/file1.xml, 
-                          /absolute/path/to/sbml/model/file2.xml], 
+resp = client.uploadSBML(["/absolute/path/to/sbml/model/file1.xml", 
+                          "/absolute/path/to/sbml/model/file2.xml"], 
                           "hsa", 
                           "KEGG",
                           "97.0")
-print("The UUID of pathway in file1.xml is {}, of file2.xml it is {}"
-      .format(resp[0].get("uuid"), resp[1].get("uuid")))
-pathwayUUIDs.add(resp[0].get("uuid"))
-pathwayUUIDs.add(resp[1].get("uuid"))
+print(resp)
+```
+
+The response is structured as a dictionary matching the filepaths to an InventoryItem of the resulting pathway in the service and will look similar to this:
+```
+{'/absolute/path/to/sbml/model/file1.xml': {'uuid': 'b0828453-6b15-4288-83cf-7085965256f1', 
+                                            'UUID': 'b0828453-6b15-4288-83cf-7085965256f1', 
+                                            'name': 'file1 patway example name', 
+                                            'pathwayId': 'path_file1', 
+                                            'organismCode': 'hsa', 
+                                            'numberOfNodes': 45, 
+                                            'numberOfTransitions': 53, 
+                                            'numberOfReactions': 0, 
+                                            'nodeTypes': ['polypeptide chain', 'simple chemical'], 
+                                            'transitionTypes': ['stimulation', 'uncertain process', 'phosphorylation', 'inhibition', 
+                                                                'non-covalent binding', 'molecular interaction', 'unknownFromSource'], 
+                                            'compartments': ['default']
+                                          },
+ '/absolute/path/to/sbml/model/file2.xml': {'uuid': '262a3cd6-923c-471b-ab4a-4ab622a49350', 
+                                            'UUID': '262a3cd6-923c-471b-ab4a-4ab622a49350', 
+                                            'name': 'file2 patway example name', 
+                                            'pathwayId': 'path_file2', 
+                                            'organismCode': 'hsa', 
+                                            'numberOfNodes': 23, 
+                                            'numberOfTransitions': 36, 
+                                            'numberOfReactions': 0, 
+                                            'nodeTypes': ['polypeptide chain', 'simple chemical'], 
+                                            'transitionTypes': ['stimulation', 'uncertain process', 'phosphorylation', 'inhibition', 
+                                                                'non-covalent binding', 'molecular interaction', 'dissociation'], 
+                                            'compartments': ['default']
+                                           }
+}
+```
+Using the dictionary keys you can access the indiviual result items and extract the uuid for further use:
+```python
+for key in resp.keys():
+    pathwayUUIDs.append(resp.get(key).get('uuid'))
+print(pathwayUUIDs)
+```
+which will result in:
+```python
+['b0828453-6b15-4288-83cf-7085965256f1', '262a3cd6-923c-471b-ab4a-4ab622a49350']
 ```
 
 Please note that the files provided need to be in a list, even when uploading only a single file as is shown here:
 
 ```python
-resp = client.uploadSBML([/absolute/path/to/sbml/model/onlyfile.xml], "hsa", "KEGG", "97.0")
+resp = client.uploadSBML(["/absolute/path/to/sbml/model/onlyfile.xml"], "hsa", "KEGG", "97.0")
 ```
+
+It's important that after this step you have a list with the UUIDs of all pathways created by uploading the SBML models.
 
 ### 6. Create pathway collection
 A network mapping always refers to one pathway instance in the database.
@@ -285,37 +325,46 @@ collUUID = client.createPathwayCollection("KEGG61-97.0",
                   "Collection pathway for all 61 KEGG pathways", 
                   pathwayUUIDs
            )
+```
+This creates a collection pathway and returns it's UUID, which can be used in the following calls to create the network mappings.
+```python
 print(collUUID)
 ```
-The endpoint returns the UUID of the created collection pathway, which can be used in the following calls to create the network mappings.
+> b6da7dc5-4dc4-4991-85c0-5ab75e2bf929
+
 
 ### 7. Create network mappings 
 To create the network mappings from a pathway a POST request to the /mapping endpoint has to be issued.
-The UUID of the pathway is part of the URL as can be seen here:
+The UUID of the pathway-collection created in the last step is part of the URL as can be seen here:
+Be sure to fill in the UUID of your installation when creating the pathway collection.
+The UUIDs are generated by SBML4j and will differ every time you run this procedure.
 
 ```bash
 curl -v \
-     -d "mappingType="PATHWAYMAPPING" \
-     -d "networkName"="PWM-KEGG-BMC" \
+     -d "mappingType"="PATHWAYMAPPING" \
+     -d "networkname"="PWM-KEGG-BMC" \
      -o response.mapping \
    http://localhost:8080/sbml4j/mapping/b6da7dc5-4dc4-4991-85c0-5ab75e2bf929
 ```
 
-TODO: Does this work with getting the uuid from the response in python? 
+Be sure to save the UUID in the response.mapping outout file as we need to use it later when we annotate this network with Drug-Target information from Drugbank.ca.
+
+In python you can use the mapPathway method to do the same:
 ```python
-resp = client.mapPathway(collUUID, "PPI", "PWM-KEGG_BMC")
-print("The created mapping has the uuid: {}".format(resp.get("uuid")))
+response_mapping = client.mapPathway(collUUID, "PPI", "PWM-KEGG_BMC")
+print("The created mapping has the uuid: {}".format(response_mapping.get("uuid")))
 ```
+> The created mapping has the uuid: a68645cb-f3bb-49d3-b05f-7f6f05debba3
 
+The python client allows to select networks by their given name, hence note down the name you provided in your method call, in this example
 
-The last part of the url (b6da7dc5-4dc4-4991-85c0-5ab75e2bf929) is the collUUID generated in the previous step. Be sure to fill in the UUID of your installation when creating the pathway collection.
-The UUIDs are generated by SBML4j and will differ every time you run this procedure.
+> PWM-KEGG-BMC
 
 The artifical mapping type 'PATHWAYMAPPING' can be used to not restrict the elements or relations being mapped and will map every entity, relation and reaction into a network mapping instance.
 Such a network mapping has been used for PeCaX to allow for the most broad view on the network context of the genes of interest.
 
 ### 8. Prepare the Drugbank csv file
-You can find the drugtarget information used in PeCaX at: https://go.drugbank.com/releases/latest#protein-identifiers
+You can find the Drug-Target information used in PeCaX at: https://go.drugbank.com/releases/latest#protein-identifiers
 You will need a free account on drugbank.ca to gain access to this file, which is released under the 'Creative Common’s Attribution-NonCommercial 4.0 International License.'
 You will have to agree to these terms and conditions to continue with the next steps described here.
 We used the 'Drug target identifiers' file for all drug groups to get a broad view on available and possible drugs and the genes and geneproducts they target.
@@ -379,7 +428,7 @@ The endpoint expects a 'type' parameter, giving a character string describing th
 
 Please note, that since there can be multiple Drugs targeting the same gene or gene-product, the annotation-names will include a numbering scheme in addition to the column names given in the csv file.
 
-Make sure to set the 'networkName' to "PeCaX-Base" (case-sensitive).
+Make sure to set the 'networkname' to "PeCaX-Base" (case-sensitive).
 SBML4j for PeCaX is configured to use the network with this name as basis for calculating the networks by default.
 If you want to use a different name, make sure to also change the appropriate config parameter in the 'docker-compose.yaml' file.
 
@@ -388,18 +437,18 @@ You can use the curl command to upload a csv file and annotate the created netwo
 curl -v \
      -F upload=@all_hsa_cleaned.csv \
      -F "type"="Drugtarget" \
-     -F "networkName"="PeCaX-Base" \
+     -F "networkname"="PeCaX-Base" \
      -o response.drugbank \
    http://localhost:8080/sbml4j/networks/a68645cb-f3bb-49d3-b05f-7f6f05debba3/csv
 ```
 
-The uuid in the url (here a68645cb-f3bb-49d3-b05f-7f6f05debba3 as example) is the uuid of the *PATHWAYMAPPING* created in [Step 7. Create network mappings](#7-create-network-mappings) and can be found in the response.mapping file created in that section using the curl command. Be sure to replace the uuid shown here with your own uuid as it is specific to your database.
+The uuid in the url (here a68645cb-f3bb-49d3-b05f-7f6f05debba3 as example) is the uuid of the *PATHWAYMAPPING* created in [Step 7. Create network mappings](#7-create-network-mappings) and can be found in the response.mapping file created in that section using the curl command. Be sure to replace the UUID shown here with your own UUID as it is specific to your database.
 
-The python package also offers this functionality:
+The python package also offers this functionality and selects the network to annotate by it's name you provided in [Step 7. Create network mappings](#7-create-network-mappings)
 ```python
 net = client.getNetworkByName("PWM-KEGG-BMC")
-net.addCsvData("all_hsa_cleaned.csv", "Drugtarget", 
-               networkName="PeCaX-Base")
+net.addCsvData("relative/path/to/all_hsa_cleaned.csv", "Drugtarget", 
+               networkname="PeCaX-Base")
 ```
 
 Now your installation of PeCaX should contain the same base network-database that can be found in the demo-version at 
