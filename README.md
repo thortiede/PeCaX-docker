@@ -252,32 +252,34 @@ print(resp)
 
 The response is structured as a dictionary matching the filepaths to an InventoryItem of the resulting pathway in the service and will look similar to this:
 ```
-{'/absolute/path/to/sbml/model/file1.xml': {'uuid': 'b0828453-6b15-4288-83cf-7085965256f1', 
-                                            'UUID': 'b0828453-6b15-4288-83cf-7085965256f1', 
-                                            'name': 'file1 patway example name', 
-                                            'pathwayId': 'path_file1', 
-                                            'organismCode': 'hsa', 
-                                            'numberOfNodes': 45, 
-                                            'numberOfTransitions': 53, 
-                                            'numberOfReactions': 0, 
-                                            'nodeTypes': ['polypeptide chain', 'simple chemical'], 
-                                            'transitionTypes': ['stimulation', 'uncertain process', 'phosphorylation', 'inhibition', 
-                                                                'non-covalent binding', 'molecular interaction', 'unknownFromSource'], 
-                                            'compartments': ['default']
-                                          },
- '/absolute/path/to/sbml/model/file2.xml': {'uuid': '262a3cd6-923c-471b-ab4a-4ab622a49350', 
-                                            'UUID': '262a3cd6-923c-471b-ab4a-4ab622a49350', 
-                                            'name': 'file2 patway example name', 
-                                            'pathwayId': 'path_file2', 
-                                            'organismCode': 'hsa', 
-                                            'numberOfNodes': 23, 
-                                            'numberOfTransitions': 36, 
-                                            'numberOfReactions': 0, 
-                                            'nodeTypes': ['polypeptide chain', 'simple chemical'], 
-                                            'transitionTypes': ['stimulation', 'uncertain process', 'phosphorylation', 'inhibition', 
-                                                                'non-covalent binding', 'molecular interaction', 'dissociation'], 
-                                            'compartments': ['default']
-                                           }
+{'/absolute/path/to/sbml/model/file1.xml': {
+       'uuid': 'b0828453-6b15-4288-83cf-7085965256f1', 
+       'UUID': 'b0828453-6b15-4288-83cf-7085965256f1', 
+       'name': 'file1 patway example name', 
+       'pathwayId': 'path_file1', 
+       'organismCode': 'hsa', 
+       'numberOfNodes': 45, 
+       'numberOfTransitions': 53, 
+       'numberOfReactions': 0, 
+       'nodeTypes': ['polypeptide chain', 'simple chemical'], 
+       'transitionTypes': ['stimulation', 'uncertain process', 'phosphorylation', 'inhibition', 
+                           'non-covalent binding', 'molecular interaction', 'unknownFromSource'], 
+       'compartments': ['default']
+      },
+ '/absolute/path/to/sbml/model/file2.xml': {
+       'uuid': '262a3cd6-923c-471b-ab4a-4ab622a49350', 
+       'UUID': '262a3cd6-923c-471b-ab4a-4ab622a49350', 
+       'name': 'file2 patway example name', 
+       'pathwayId': 'path_file2', 
+       'organismCode': 'hsa', 
+       'numberOfNodes': 23, 
+       'numberOfTransitions': 36, 
+       'numberOfReactions': 0, 
+       'nodeTypes': ['polypeptide chain', 'simple chemical'], 
+       'transitionTypes': ['stimulation', 'uncertain process', 'phosphorylation', 'inhibition', 
+                           'non-covalent binding', 'molecular interaction', 'dissociation'], 
+       'compartments': ['default']
+      }
 }
 ```
 Using the dictionary keys you can access the indiviual result items and extract the uuid for further use:
@@ -297,7 +299,8 @@ Please note that the files provided need to be in a list, even when uploading on
 resp = client.uploadSBML(["/absolute/path/to/sbml/model/onlyfile.xml"], "hsa", "KEGG", "97.0")
 ```
 
-It's important that after this step you have a list with the UUIDs of all pathways created by uploading the SBML models.
+It is important that after this step you have a list with the UUIDs of all pathways created by uploading the SBML models.
+We will need it in the next step.
 
 ### 6. Create pathway collection
 A network mapping always refers to one pathway instance in the database.
@@ -321,8 +324,8 @@ curl -v \
 
 A simple python call making use of pysbml4j can look like this:
 ```python
-collUUID = client.createPathwayCollection("KEGG61-97.0", 
-                  "Collection pathway for all 61 KEGG pathways", 
+collUUID = client.createPathwayCollection("BMC_Collection", 
+                  "This is the Collection for the BMC Publication", 
                   pathwayUUIDs
            )
 ```
@@ -347,11 +350,11 @@ curl -v \
    http://localhost:8080/sbml4j/mapping/b6da7dc5-4dc4-4991-85c0-5ab75e2bf929
 ```
 
-Be sure to save the UUID in the response.mapping outout file as we need to use it later when we annotate this network with Drug-Target information from Drugbank.ca.
+Be sure to save the UUID in the response.mapping output file as we need to use it later when we annotate this network with Drug-Target information from Drugbank.ca.
 
 In python you can use the mapPathway method to do the same:
 ```python
-response_mapping = client.mapPathway(collUUID, "PPI", "PWM-KEGG_BMC")
+response_mapping = client.mapPathway(collUUID, "PATHWAYMAPPING", "PWM-KEGG-BMC")
 print("The created mapping has the uuid: {}".format(response_mapping.get("uuid")))
 ```
 > The created mapping has the uuid: a68645cb-f3bb-49d3-b05f-7f6f05debba3
@@ -435,7 +438,7 @@ If you want to use a different name, make sure to also change the appropriate co
 You can use the curl command to upload a csv file and annotate the created network mapping with the contained data:
 ```bash
 curl -v \
-     -F upload=@all_hsa_cleaned.csv \
+     -F upload=@relative/path/to/all_hsa_cleaned.csv \
      -F "type"="Drugtarget" \
      -F "networkname"="PeCaX-Base" \
      -o response.drugbank \
