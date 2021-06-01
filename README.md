@@ -126,7 +126,7 @@ The following instructions provide examples for the communication with the REST 
 Alternatively you can use a tool of your choice to issue GET and POST http requests to the SBML4j service, like Postman.
 You can find the API definition for initialising the requests in your tool of choice at https://github.com/kohlbacherlab/sbml4j-compose/api_doc/sbml4j.yaml
 
-Please note, that file-names, argument values and UUIDs used are only exemplary and need to replaced with the actual values from your installation.
+Please note, that file names, argument values, and UUIDs shown here are only illustrative and need to be replaced with the actual values from your installation.
 Also note, that the '\' character in the examples below is used to signify line breaks to make the blocks more readable and might need to be removed before executing the snippets, depending on your system.
 
 To use the python code examples you need to install the 'pysbml4j' python package:
@@ -224,7 +224,7 @@ For best performance we recommend uploading the model files one by one or in sma
 Choose the same organism, source and version parameters for all pathway maps to ensure proper integration in the next step.
 For details on the RESTful interface visit https://app.swaggerhub.com/apis-docs/tiede/sbml4j/1.1.7
 
-An exemplary curl command for uploading SBML models to a local service is shown below (you can upload multiple files at once by providing multiple *-F files=@* parameters to the curl command, but can also just use one at a time) :
+A curl command for uploading SBML models to a local service is shown below (you can upload multiple files at once by providing multiple *-F files=@* parameters to the curl command, but can also just use one at a time) :
 ```bash
 curl -v \
      -F files=@/absolute/path/to/sbml/model/file1.xml \
@@ -375,7 +375,7 @@ In order to reproduce the results found in the publication two preprocessing ste
   1. Filter out all rows that are not targeting genes in Humans (column 'Species').
   2. Consolidate rows with the same 'ID' into one row, combining the elements in the 'Drug IDs' of all those rows into one.
 
-Here we provide an exemplary R script to perform Step 2 above:
+Here we provide an R script to perform Step 2 above:
 
 ```R
 csv <- read.csv("all.csv", header=TRUE, stringsAsFactors = FALSE)
